@@ -6,7 +6,6 @@ import Information from './components/Information'
 import Transcribing from './components/Transcribing'
 import { MessageTypes } from './utils/presets'
 
-
 function App() {
   const [file, setFile] = useState(null)
   const [audioStream, setAudioStream] = useState(null)
@@ -40,15 +39,21 @@ function App() {
           setLoading(true)
           console.log("LOADING")
           break;
-        case 'RESULT':
+        case 'RESULT': {
           setOutput(e.data.results)
+          console.log(e.data.results)
+          const combinedText = e.data.results.map(item => item.text).join(". ")
+          console.log(combinedText)
+
           break;
+        }
         case 'INFERENCE_DONE':
           setFinished(true)
           console.log("DONE")
           break;
       }
     }
+
 
     worker.current.addEventListener('message', onMessageReceived)
 
@@ -61,7 +66,7 @@ function App() {
     const sampling_rate = 16000
     const audioCTX = new AudioContext({ sampleRate: sampling_rate })
     const response = await file.arrayBuffer()
-    const decoded = await audioCTX.decodedAudioData(response)
+    const decoded = await audioCTX.decodeAudioData(response) // 4:30
     const audio = decoded.getChannelData(0)
     return audio
   }
@@ -84,11 +89,11 @@ function App() {
       <section className='min-h-screen flex flex-col'>
         <Header />
         {output ? (
-          <Information />
+          <Information output={output} />
         ) : loading ? (
           <Transcribing />
         ) : isAudioAvailable ? (
-          <FileDisplay handleAudioReset={handleAudioReset} file={file} audioStream={audioStream} />
+          <FileDisplay handleFormSubmission={handleFormSubmission} handleAudioReset={handleAudioReset} file={file} audioStream={audioStream} />
         ) : (
           <HomePage setFile={setFile} setAudioStream={setAudioStream} />
         )}

@@ -87,7 +87,7 @@ class GenerationTracker {
     constructor(pipeline, stride_length_s) {
         this.pipeline = pipeline
         this.stride_length_s = stride_length_s
-        this.chunk_length = 30
+        this.chunk_length_s = 20
         this.chunks = []
         this.time_precision = pipeline?.processor.feature_extractor.config.chunk_length / pipeline.model.config.max_source_positions
         this.processed_chunks = []
